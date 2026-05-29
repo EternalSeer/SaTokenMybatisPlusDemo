@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.LoginLogMapper">
+
+    <select id="selectDailyStats" resultType="com.example.domain.LoginLogDailyStats">
+        WITH filtered_log AS (
+            SELECT
+                l.id,
+                l.user_id,
+                l.username,
+                l.success,
+                l.created_at
+            FROM sys_login_log l
+            LEFT JOIN sys_user u ON u.id = l.user_id AND u.deleted = 0
+            <where>
+                l.deleted = 0
+                <if test="username != null and username != ''">
+                    AND l.username = #{username}
+                </if>
+                <if test="success != null">
+                    AND l.success = #{success}
+                </if>
+                <if test="startTime != null">
+                    AND l.created_at &gt;= #{startTime}
+                </if>
+                <if test="endTime != null">
+                    AND l.created_at &lt;= #{endTime}
+                </if>
+            </where>
+        )
+        SELECT
+            CAST(DATE_TRUNC('day', created_at) AS date) AS stat_date,
+            username,
+            COUNT(*) AS total_count,
+            SUM(CASE WHEN success THEN 1 ELSE 0 END) AS success_count,
+            SUM(CASE WHEN success THEN 0 ELSE 1 END) AS failure_count,
+            MIN(CAST(created_at AS date)) AS first_login_date,
+            MAX(CAST(created_at AS date)) AS last_login_date
+        FROM filtered_log
+        GROUP BY CAST(DATE_TRUNC('day', created_at) AS date), username
+        ORDER BY stat_date DESC, total_count DESC, username ASC
+    </select>
+
+</mapper>
