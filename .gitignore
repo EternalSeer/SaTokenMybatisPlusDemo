@@ -1,6 +1,7 @@
 target/
+build/
+.gradle/
 .tools/
-!.mvn/wrapper/maven-wrapper.jar
 
 ### IDE ###
 .idea/

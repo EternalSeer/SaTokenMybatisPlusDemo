@@ -39,16 +39,22 @@ CREATE DATABASE user_crud;
 
 ## 启动
 
-如果本机已经安装 Maven：
+使用项目内置 Gradle Wrapper：
 
 ```bash
-mvn spring-boot:run
+./gradlew bootRun
 ```
 
-也可以使用项目内置 Maven：
+Windows PowerShell：
 
 ```powershell
-.\.tools\apache-maven-3.9.11\bin\mvn.cmd spring-boot:run
+.\gradlew.bat bootRun
+```
+
+运行测试：
+
+```bash
+./gradlew test
 ```
 
 启动后可访问：
